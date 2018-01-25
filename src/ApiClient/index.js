@@ -1,56 +1,92 @@
 var request = require('request');
 var cfg = require('../config');
-var Users = require('./users');
+var resources = require('./resources');
 
 function ApiClient(options) {
+  options = options || {};
+
+  if (!options.accessToken) {
+    throw new Error('`accessToken` needs to be passed to initialize ApiClient');
+  }
+
+  if (!options.refreshToken) {
+    throw new Error(
+      '`refreshToken` needs to be passed to initialize ApiClient'
+    );
+  }
+
+  if (!options.onTokenRefresh) {
+    throw new Error(
+      '`onTokenRefresh` needs to be passed to initialize ApiClient'
+    );
+  }
+
+  if (typeof options.onTokenRefresh !== 'function') {
+    throw new Error('`onTokenRefresh` needs to be a function');
+  }
+
   this._sandbox = options.sandbox || false;
+  this._version = options.version || cfg.version;
+  this._baseurl =
+    (options.sandbox ? cfg.sandbox_baseurl : cfg.baseurl) + '/' + this._version;
+
   this._accessToken = options.accessToken;
   this._refreshToken = options.refreshToken;
   this._onTokenRefresh = options.onTokenRefresh;
-  this._baseurl = options.sandbox ? cfg.sandbox_baseurl : cfg.baseurl;
-
-  Users.call(this);
 }
 
-ApiClient.prototype.users = new Users();
-
-ApiClient.prototype._request = function(method, path, body, headers, cb) {
-  var baseHeaders = {
-    Authorization: 'Bearer ' + this._accessToken
-  };
-
-  if (arguments.length === 3) {
-    cb = body;
-    body = {};
-    headers = {};
-  }
-
-  if (arguments.length === 4) {
-    cb = headers;
-    headers = {};
-  }
-
-  if (typeof cb !== 'function') {
-    throw new Error('callback not passed');
-  }
-
-  baseHeaders = Object.assign({}, baseHeaders, headers);
-
-  request(
-    {
-      method: method,
-      url: this._baseurl + path,
-      headers: baseHeaders
-    },
-    function(err, response, responseBody) {
-      if (err) {
-        cb(err);
-        return;
-      }
-
-      cb(null, JSON.parse(responseBody));
+ApiClient.prototype = {
+  setAccessToken: function(accessToken) {
+    if (accessToken) {
+      this._accessToken = accessToken;
     }
-  );
+  },
+
+  _request: function(method, path, body, headers, cb) {
+    var baseHeaders = {
+      Authorization: 'Bearer ' + this._accessToken
+    };
+
+    if (arguments.length === 3) {
+      cb = body;
+      body = {};
+      headers = {};
+    }
+
+    if (arguments.length === 4) {
+      cb = headers;
+      headers = {};
+    }
+
+    if (typeof cb !== 'function') {
+      throw new Error('Callback not passed');
+    }
+
+    baseHeaders = Object.assign({}, baseHeaders, headers);
+
+    request(
+      {
+        method: method,
+        url: this._baseurl + path,
+        headers: baseHeaders
+      },
+      function(err, response, responseBody) {
+        if (err) {
+          cb(err);
+          return;
+        }
+
+        cb(null, JSON.parse(responseBody));
+      }
+    );
+  }
 };
+
+// Add methods from resources on ApiClient prototype
+Object.keys(resources).forEach(function(resource) {
+  Object.keys(resources[resource]).forEach(function(method) {
+    ApiClient.prototype[method] = resources[resource][method];
+  });
+});
 
 module.exports = ApiClient;
