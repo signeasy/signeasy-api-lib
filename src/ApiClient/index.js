@@ -68,7 +68,9 @@ ApiClient.prototype = {
       {
         method: method,
         url: this._baseurl + path,
-        headers: baseHeaders
+        headers: baseHeaders,
+        json: true,
+        formData: body
       },
       function(err, response, responseBody) {
         if (err) {
