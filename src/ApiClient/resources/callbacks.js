@@ -10,7 +10,7 @@ module.exports = {
       urls: urls.join(',')
     };
 
-    this.request('POST', path, body, cb);
+    this._request('POST', path, body, cb);
   },
 
   deleteCallbackUrls: function(urls, cb) {
@@ -18,6 +18,6 @@ module.exports = {
       urls: urls.join(',')
     };
 
-    this.request('DELETE', path, body, cb);
+    this._request('DELETE', path, body, cb);
   }
 };

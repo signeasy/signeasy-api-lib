@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint src",
     "precommit": "lint-staged",
-    "test": "mocha tests --recursive"
+    "test": "mocha tests --recursive --timeout 10000"
   },
   "lint-staged": {
     "*.{js,json}": ["eslint src --fix", "prettier --write", "git add"]

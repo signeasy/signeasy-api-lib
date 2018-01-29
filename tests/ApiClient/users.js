@@ -5,7 +5,7 @@ var cfg = require('../config');
 describe('User Resource', function() {
   var client;
 
-  beforeEach(() => {
+  before(() => {
     client = new ApiClient({
       sandbox: process.env.NODE_ENV !== 'production',
       clientId: cfg.clientId,

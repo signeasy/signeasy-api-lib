@@ -77,8 +77,6 @@ ApiClient.prototype = {
 
     baseHeaders = Object.assign({}, baseHeaders, headers);
 
-    console.log(method, this._baseurl + path, baseHeaders, body);
-
     request(
       {
         method: method,

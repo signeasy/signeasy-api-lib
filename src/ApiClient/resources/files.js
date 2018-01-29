@@ -21,6 +21,6 @@ module.exports = {
       file: fs.createReadStream(filepath)
     };
 
-    this.request('POST', path + 'original/', body, cb);
+    this._request('POST', path + 'original/', body, cb);
   }
 };
