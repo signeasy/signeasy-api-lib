@@ -6,6 +6,7 @@
   },
   "plugins": ["json"],
   "rules": {
+    "arrow-parens": 0,
     "comma-dangle": ["error", "never"],
     "func-names": 0,
     "function-paren-newline": 0,
