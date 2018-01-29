@@ -5,6 +5,16 @@ var resources = require('./resources');
 function ApiClient(options) {
   options = options || {};
 
+  if (!options.clientId) {
+    throw new Error('`clientId` needs to be passed to initialize ApiClient');
+  }
+
+  if (!options.clientSecret) {
+    throw new Error(
+      '`clientSecret` needs to be passed to initialize ApiClient'
+    );
+  }
+
   if (!options.accessToken) {
     throw new Error('`accessToken` needs to be passed to initialize ApiClient');
   }
@@ -30,6 +40,8 @@ function ApiClient(options) {
   this._baseurl =
     (options.sandbox ? cfg.sandbox_baseurl : cfg.baseurl) + '/' + this._version;
 
+  this._clientId = options.clientId;
+  this._clientSecret = options.clientSecret;
   this._accessToken = options.accessToken;
   this._refreshToken = options.refreshToken;
   this._onTokenRefresh = options.onTokenRefresh;
@@ -44,6 +56,7 @@ ApiClient.prototype = {
 
   _request: function(method, path, body, headers, cb) {
     var baseHeaders = {
+      'X-Client-Id': this._clientId,
       Authorization: 'Bearer ' + this._accessToken
     };
 

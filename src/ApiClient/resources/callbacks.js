@@ -1,31 +1,23 @@
-var util = require('../../util');
-
 var path = '/callback/urls/';
 
 module.exports = {
-  getCallbackUrls: function(clientId, cb) {
-    var headers = util.getClientHeader(clientId);
-
-    this._request('GET', path, undefined, headers, cb);
+  getCallbackUrls: function(cb) {
+    this._request('GET', path, cb);
   },
 
-  createCallbackUrls: function(clientId, urls, cb) {
-    var headers = util.getClientHeader(clientId);
-
+  createCallbackUrls: function(urls, cb) {
     var body = {
       urls: urls.join(',')
     };
 
-    this.request('POST', path, body, headers, cb);
+    this.request('POST', path, body, cb);
   },
 
-  deleteCallbackUrls: function(clientId, urls, cb) {
-    var headers = util.getClientHeader(clientId);
-
+  deleteCallbackUrls: function(urls, cb) {
     var body = {
       urls: urls.join(',')
     };
 
-    this.request('DELETE', path, body, headers, cb);
+    this.request('DELETE', path, body, cb);
   }
 };
