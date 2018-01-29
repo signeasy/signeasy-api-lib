@@ -22,5 +22,9 @@ module.exports = {
     };
 
     this._request('POST', path + 'original/', body, cb);
+  },
+
+  downloadOriginalFile: function(fileid, cb) {
+    this._request('GET', path + 'original/' + fileid + '/download/', cb);
   }
 };

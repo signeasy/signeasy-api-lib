@@ -5,6 +5,7 @@ var cfg = require('../config');
 
 describe('File Resource', function() {
   var client;
+  var fileid;
 
   before(() => {
     client = new ApiClient({
@@ -30,6 +31,7 @@ describe('File Resource', function() {
         }
 
         assert.ok(res.name === filename);
+        fileid = res.id;
         done();
       }
     );
@@ -67,6 +69,18 @@ describe('File Resource', function() {
       }
 
       assert.ok('count' in files);
+      done();
+    });
+  });
+
+  it('should download original file', function(done) {
+    client.downloadOriginalFile(fileid, (err, res) => {
+      if (err) {
+        done(err);
+        return;
+      }
+
+      assert.ok(res);
       done();
     });
   });
