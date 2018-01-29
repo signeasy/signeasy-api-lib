@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint src",
     "precommit": "lint-staged",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha tests --recursive"
   },
   "lint-staged": {
     "*.{js,json}": ["eslint src --fix", "prettier --write", "git add"]
@@ -29,6 +29,7 @@
     "eslint-plugin-json": "^1.2.0",
     "husky": "^0.14.3",
     "lint-staged": "^6.0.1",
+    "mocha": "^5.0.0",
     "prettier": "^1.10.2"
   },
   "dependencies": {
