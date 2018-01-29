@@ -77,6 +77,8 @@ ApiClient.prototype = {
 
     baseHeaders = Object.assign({}, baseHeaders, headers);
 
+    console.log(method, this._baseurl + path, baseHeaders, body);
+
     request(
       {
         method: method,
@@ -91,7 +93,7 @@ ApiClient.prototype = {
           return;
         }
 
-        cb(null, JSON.parse(responseBody));
+        cb(null, responseBody);
       }
     );
   }

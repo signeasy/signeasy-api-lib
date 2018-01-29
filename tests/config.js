@@ -1,7 +1,7 @@
 module.exports = {
-  clientId: '07biLc2vH7Ze3PrbtfkipAJspsqoOS0yZBdqKDjV',
-  clientSecret: 'eJMHT106B551M5Kpm5oqrjj8Lt3ozcI0Sn7USxLrmktxQgnceE',
-  accessToken: 'something',
-  refreshToken: 'refreshsomething',
+  clientId: process.env.CLIENT_ID,
+  clientSecret: process.env.CLIENT_SECRET,
+  accessToken: process.env.ACCESS_TOKEN,
+  refreshToken: process.env.REFRESH_TOKEN,
   callbackUrl: 'http://test.signeasy.com/callback'
 };
