@@ -1,7 +1,7 @@
 const ApiClient = require('./ApiClient');
-const OAuthClient = require('./OAuthClient');
+const OAuthStrategy = require('./OAuthStrategy');
 
 module.exports = {
   ApiClient,
-  OAuthClient
+  OAuthStrategy
 };
