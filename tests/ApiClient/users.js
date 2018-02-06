@@ -16,6 +16,17 @@ describe('User Resource', function() {
     });
   });
 
+  it('should throw error when callback not passed', function(done) {
+    try {
+      client.getProfile();
+      assert.ok(false);
+    } catch (err) {
+      assert.ok(err);
+    }
+
+    done();
+  });
+
   it('should fetch user', function(done) {
     client.getProfile((err, profile) => {
       if (err) {
@@ -24,6 +35,19 @@ describe('User Resource', function() {
       }
 
       assert.ok(profile.id);
+      done();
+    });
+  });
+
+  it('should throw error when baseurl is invalid', function(done) {
+    client._baseurl = 'signeasy';
+    client.getProfile(err => {
+      if (err) {
+        assert.ok(true);
+      } else {
+        assert.ok(false);
+      }
+
       done();
     });
   });

@@ -84,4 +84,16 @@ describe('File Resource', function() {
       done();
     });
   });
+
+  it('should fail to download original file with incorrect fileid', function(done) {
+    client.downloadOriginalFile(123, err => {
+      if (err) {
+        assert.ok(true);
+      } else {
+        assert.ok(false);
+      }
+
+      done();
+    });
+  });
 });

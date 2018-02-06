@@ -48,11 +48,17 @@ function ApiClient(options) {
 }
 
 ApiClient.prototype = {
-  setAccessToken: function(accessToken) {
-    if (accessToken) {
-      this._accessToken = accessToken;
-    }
-  },
+  // setAccessToken: (accessToken) => {
+  //   if (accessToken) {
+  //     this._accessToken = accessToken;
+  //   }
+  // },
+
+  // setRefreshToken: (refreshToken) => {
+  //   if (refreshToken) {
+  //     this._refreshToken = refreshToken;
+  //   }
+  // },
 
   _request: function(method, path, body, headers, cb) {
     var baseHeaders = {
@@ -88,6 +94,84 @@ ApiClient.prototype = {
       function(err, response, responseBody) {
         if (err) {
           cb(err);
+          return;
+        }
+
+        // if (response.statusCode === 401) {
+        //   this.refreshToken((err2, res) => {
+        //     if (err2) {
+        //       cb(err2);
+        //       return;
+        //     }
+
+        //     this.setAccessToken(res.access_token);
+        //     this.setRefreshToken(res.refresh_token);
+
+        //     // Fire the same call again
+        //     this._request(method, path, body, headers, cb);
+
+        //     // Call back the user specified `onTokenRefresh` hook
+        //     this._onTokenRefresh(res.access_token, res.refresh_token);
+        //   });
+
+        //   return;
+        // }
+
+        if (
+          !(response.statusCode >= 200 && response.statusCode <= 299) &&
+          response.statusCode !== 301 &&
+          response.statusCode !== 302
+        ) {
+          cb(responseBody);
+          return;
+        }
+
+        cb(null, responseBody);
+      }
+    );
+  },
+
+  _requestOauth: function(method, path, body, headers, cb) {
+    var oauthUrl = this._baseurl.replace(this._version, 'oauth2');
+    var baseHeaders = {};
+
+    if (arguments.length === 3) {
+      cb = body;
+      body = {};
+      headers = {};
+    }
+
+    if (arguments.length === 4) {
+      cb = headers;
+      headers = {};
+    }
+
+    if (typeof cb !== 'function') {
+      throw new Error('Callback not passed');
+    }
+
+    baseHeaders = Object.assign({}, baseHeaders, headers);
+
+    request(
+      {
+        method: method,
+        url: oauthUrl + path,
+        headers: baseHeaders,
+        json: true,
+        formData: body
+      },
+      function(err, response, responseBody) {
+        if (err) {
+          cb(err);
+          return;
+        }
+
+        if (
+          !(response.statusCode >= 200 && response.statusCode <= 299) &&
+          response.statusCode !== 301 &&
+          response.statusCode !== 302
+        ) {
+          cb(responseBody);
           return;
         }
 
