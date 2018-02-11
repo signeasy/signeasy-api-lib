@@ -1,4 +1,4 @@
-# Node SDK for SignEasy
+# Node SDK for SignEasy [BETA]
 
 A node sdk client for Signeasy API which will simplify the integration of Signeasy Authentication & APIs in your Express based Node web apps.
 
