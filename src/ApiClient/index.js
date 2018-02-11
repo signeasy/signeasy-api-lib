@@ -25,15 +25,15 @@ function ApiClient(options) {
     );
   }
 
-  if (!options.onTokenRefresh) {
-    throw new Error(
-      '`onTokenRefresh` needs to be passed to initialize ApiClient'
-    );
-  }
+  // if (!options.onTokenRefresh) {
+  //   throw new Error(
+  //     '`onTokenRefresh` needs to be passed to initialize ApiClient'
+  //   );
+  // }
 
-  if (typeof options.onTokenRefresh !== 'function') {
-    throw new Error('`onTokenRefresh` needs to be a function');
-  }
+  // if (typeof options.onTokenRefresh !== 'function') {
+  //   throw new Error('`onTokenRefresh` needs to be a function');
+  // }
 
   this._sandbox = options.sandbox || false;
   this._version = options.version || cfg.version;

@@ -84,36 +84,36 @@ describe('Api Client', function() {
     done();
   });
 
-  it('should fail when onTokenRefresh is not passed', function(done) {
-    try {
-      client = new ApiClient({
-        sandbox: process.env.NODE_ENV !== 'production',
-        clientId: cfg.clientId,
-        clientSecret: cfg.clientSecret,
-        accessToken: cfg.accessToken,
-        refreshToken: cfg.refreshToken
-      });
-      assert.ok(false);
-    } catch (err) {
-      assert.ok(err);
-    }
-    done();
-  });
+  // it('should fail when onTokenRefresh is not passed', function(done) {
+  //   try {
+  //     client = new ApiClient({
+  //       sandbox: process.env.NODE_ENV !== 'production',
+  //       clientId: cfg.clientId,
+  //       clientSecret: cfg.clientSecret,
+  //       accessToken: cfg.accessToken,
+  //       refreshToken: cfg.refreshToken
+  //     });
+  //     assert.ok(false);
+  //   } catch (err) {
+  //     assert.ok(err);
+  //   }
+  //   done();
+  // });
 
-  it('should fail if onTokenRefresh is not a function', function(done) {
-    try {
-      client = new ApiClient({
-        sandbox: process.env.NODE_ENV !== 'production',
-        clientId: cfg.clientId,
-        clientSecret: cfg.clientSecret,
-        accessToken: cfg.accessToken,
-        refreshToken: cfg.refreshToken,
-        onTokenRefresh: 'function'
-      });
-      assert.ok(false);
-    } catch (err) {
-      assert.ok(err);
-    }
-    done();
-  });
+  // it('should fail if onTokenRefresh is not a function', function(done) {
+  //   try {
+  //     client = new ApiClient({
+  //       sandbox: process.env.NODE_ENV !== 'production',
+  //       clientId: cfg.clientId,
+  //       clientSecret: cfg.clientSecret,
+  //       accessToken: cfg.accessToken,
+  //       refreshToken: cfg.refreshToken,
+  //       onTokenRefresh: 'function'
+  //     });
+  //     assert.ok(false);
+  //   } catch (err) {
+  //     assert.ok(err);
+  //   }
+  //   done();
+  // });
 });
