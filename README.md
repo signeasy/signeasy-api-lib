@@ -1,114 +1,236 @@
 # Node SDK for SignEasy
 
-A SDK client for Signeasy which will ease the integration of Signeasy Authentication & APIs in your Node based Express apps.
+A node sdk client for Signeasy API which will simplify the integration of Signeasy Authentication & APIs in your Express based Node web apps.
 
-# Usage
-For Authentication, we use passport-js which will help with easy integration of Signeasy service for authenticating a user
+### Requirements
+Node 4 or above
 
-### Authorizing user & fetching accessToken & refreshToken
-### Use it as authentication stratety for passport
+### Installation
+Using NPM
+```
+npm i signeasy --save
+```
+
+### Usage
+This SDK contains 2 modules. One is a OAuth2 based custom passport-strategy for authentication of Signeasy users. Authentication will be needed to retreive `accessToken` & `refreshToken`.
+
+#### Passport.js based Signeasy's OAuth Strategy for Express
+
 ```
 const express = require('express');
+const session = require('express-session');
 const passport = require('passport');
-const SEAuth = require('signeasy').OAuthClient;
+const SEAuth = require('signeasy').OAuthStrategy;
+const SEApi = require('signeasy').ApiClient;
+const cfg = require('./config');
 const server = express();
 
+server.use(session({
+  secret: 'secrettoken',
+  resave: true,
+  saveUninitialized: true
+}));
+
+// Initialize Passport
 server.use(passport.initialize());
 server.use(passport.session());
 
+// Add SignEasy OAuthClient as passport-strategy for authentication
 passport.use(new SEAuth(
   {
-    sandbox: true, // omit or mark it as false for production use
-    clientID: '<CLIENT_ID>',
-    clientSecret: '<CLIENT_SECRET>',
-    callbackURL: '<REDIRECT_URL>', // User will be redirected here after successful authorization
-    scope: 'user:read' // comma separated list of scopes
+    sandbox: true,
+    clientID: cfg.clientID,
+    clientSecret: cfg.clientSecret,
+    callbackURL: cfg.callbackURL,
+    scope: 'user:read'
   },
   function(accessToken, refreshToken, profile, done) {
-    // Based on accessToken & refreshToken, you can retrieve the profile
-    // of the user
-  }
-));
-```
+    console.log('Got access token', accessToken, refreshToken);
 
-
-## Initializing ApiClient & making requests
-```
-const express = require('express');
-const SEApi = require('signeasy').ApiClient;
-const server = express();
-
-// Example Route which is already authenticated
-server.get('/me', (req, res) => {
-  if (req.user) {
+    // Once we have the accessToken & refreshToken, we can initialize the SignEasy API Client for making API requests
     const apiClient = new SEApi({
       sandbox: true,
+      clientId: cfg.clientID,
+      clientSecret: cfg.clientSecret,
       accessToken: accessToken,
-      refreshToken: refreshToken,
-      onTokenExpiry: (newAccessToken, done) => {
-        // This function will be called when the accessToken is expired
-        // & a new accessToken will be issued by using the refreshToken passed
-        // Do something with this newAccessToken
-        // call done(null, true) once you have finished
-      }
+      refreshToken: refreshToken
     });
 
-    apiClient.users.getUser((err, user) => {
+    apiClient.getProfile((err, user) => {
       if (err) {
         done(err);
         return;
       }
 
-      console.log('Got User Profile', user);
+      // Ideally, we would want to store the accessToken & refreshToken in some DB for later use
+      user.accessToken = accessToken;
+      user.refreshToken = refreshToken;
+
+      console.log('Got user', user);
+
+      done(undefined, user);
     });
+  }
+));
+
+
+server.get('/auth', passport.authenticate('signeasy'));
+server.get('/auth/cb', passport.authenticate('signeasy',
+  {
+    session: true
+  }
+), (req, res) => {
+  if (req.user) {
+    res.json(req.user);
   } else {
-    res.redirect('/');
+    res.json(false);
   }
 });
-````
 
 
-## API Client Signatures
+server.listen(cfg.port, function () {
+  console.log(`Visit ${cfg.baseUrl} to view the app`);
+});
+const express = require('express');
+const session = require('express-session');
+const passport = require('passport');
+const SEAuth = require('signeasy').OAuthStrategy;
+const SEApi = require('signeasy').ApiClient;
+const cfg = require('./config');
+const server = express();
+
+server.use(session({
+  secret: 'secrettoken',
+  resave: true,
+  saveUninitialized: true
+}));
+
+// Initialize Passport
+server.use(passport.initialize());
+server.use(passport.session());
+
+// Add SignEasy OAuthClient as passport-strategy for authentication
+passport.use(new SEAuth(
+  {
+    clientID: cfg.clientID,
+    clientSecret: cfg.clientSecret,
+    callbackURL: cfg.callbackURL,
+    scope: 'user:read'
+  },
+  function(accessToken, refreshToken, profile, done) {
+    console.log('Got access token', accessToken, refreshToken);
+
+    // Once we have the accessToken & refreshToken, we can initialize the
+    // SignEasy API Client for making API requests
+    const apiClient = new SEApi({
+      clientId: cfg.clientID,
+      clientSecret: cfg.clientSecret,
+      accessToken: accessToken,
+      refreshToken: refreshToken
+    });
+
+    apiClient.getProfile((err, user) => {
+      if (err) {
+        done(err);
+        return;
+      }
+
+      // Ideally, we would want to store the accessToken & refreshToken in
+      // some DB for later use
+      user.accessToken = accessToken;
+      user.refreshToken = refreshToken;
+
+      console.log('Got user', user);
+
+      done(undefined, user);
+    });
+  }
+));
 
 
-### Create Instance
+server.get('/auth', passport.authenticate('signeasy'));
+server.get('/auth/cb', passport.authenticate('signeasy',
+  {
+    session: true
+  }
+), (req, res) => {
+  if (req.user) {
+    res.json(req.user);
+  } else {
+    res.json(false);
+  }
+});
+
+
+server.listen(cfg.port, function () {
+  console.log(`Visit ${cfg.baseUrl} to view the app`);
+});
+
+```
+
+
+#### Using SignEasy API Client for making API requests
+Once we have the `accessToken` & `refreshToken`, we can instantiate our new Signeasy API Client using which we will make all our api calls.
+
 ```
 const SEApi = require('signeasy').ApiClient;
 
+// Instantiating our new ApiClient
 const apiClient = new SEApi({
-  sandbox: true, // Optional - false or omit it in production mode. Defaults to false
-  accessToken: accessToken, // Required
-  refreshToken: refreshToken, // Required
-  onTokenExpiry: (newAccessToken, done) => { // Required
-    // Do something with newAccessToken
-    // Call done with the new Access Token
-    // done(newAccessToken)
+  clientId: 'CLIENT_ID_HERE',
+  clientSecret: 'CLIENT_SECRET_HERE',
+  accessToken: 'ACCESS_TOKEN_HERE', // retrieved as part of Authorization
+  refreshToken: 'REFRESH_TOKEN_HERE' // retrieved as part of Authorization
+});
+
+// Fetching current user profile
+apiClient.getProfile((err, profile) => {
+  if (err) {
+    throw err;
   }
-});
-```
 
-### Calling methods on resources
-
-```
-// Retreiving files
-apiClient.files.getFile(fileId, (err, file) => {
-    if (err) {
-        // handle error;
-        return;
-    }
-
-    console.log('Got File', file);
-});
+  console.log('Fetched user profile', profile);
+})
 
 
-// Retrieving user
-apiClient.users.getProfile((err, user) => {
-    if (err) {
-        // handle error;
-        return;
-    }
+// Fetching all files of current user
+apiClient.getAllFiles((err, files) => {
+  if (err) {
+    throw err;
+  }
 
-    console.log('Got User', user);
+  console.log('Fetched all files', files);
 })
 ```
 
+[List of all functions is available here](https://github.com/signeasy/API)
+
+[Sample code for various functions can be found here](https://github.com/signeasy/API)
+
+
+### Tests
+Tests can be run either against Dev apis or production apis. To run tests, one needs to pass the following values as environment variables
+`CLIENT_ID`
+`CLIENT_SECRET`
+`ACCESS_TOKEN`
+`REFRESH_TOKEN`
+
+To run tests against Dev apis, run the below command
+```
+ACCESS_TOKEN=YOUR_ACCESS_TOKEN REFRESH_TOKEN=YOUR_REFRESH_TOKEN CLIENT_ID=YOUR_CLIENT_ID CLIENT_SECRET=YOUR_CLIENT_SECRET npm test
+```
+
+To run tests against Production apis, run the below command
+```
+NODE_ENVIRONMENT=PRODUCTION ACCESS_TOKEN=YOUR_ACCESS_TOKEN REFRESH_TOKEN=YOUR_REFRESH_TOKEN CLIENT_ID=YOUR_CLIENT_ID CLIENT_SECRET=YOUR_CLIENT_SECRET npm test
+```
+
+### Support
+
+- For getting API Access (client id & secret): http://lp.getsigneasy.com/api-request/
+- Technical Assistance: support@getsigneasy.com
+- Sales Enquiries: sales@getsigneasy.com
+
+
+### License
+MIT
