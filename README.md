@@ -203,9 +203,9 @@ apiClient.getAllFiles((err, files) => {
 })
 ```
 
-[List of all functions is available here](https://github.com/signeasy/API)
+### Docs
 
-[Sample code for various functions can be found here](https://github.com/signeasy/API)
+[List of all functions & their usage is available here](/docs)
 
 
 ### Tests

@@ -16,7 +16,7 @@ module.exports = {
   },
 
   importFileAsOriginal: function(filename, filepath, cb) {
-    const body = {
+    var body = {
       name: filename,
       file: fs.createReadStream(filepath)
     };
