@@ -25,70 +25,96 @@ const SEApi = require('signeasy').ApiClient;
 const cfg = require('./config');
 const server = express();
 
-server.use(session({
-  secret: 'secrettoken',
-  resave: true,
-  saveUninitialized: true
-}));
+
+// Ideally, one would use something like Redis in production for storing our
+// sessions
+const userSessionCache = {};
+
+server.use(
+  session({
+    secret: 'secret token',
+    resave: true,
+    saveUninitialized: true
+  })
+);
 
 // Initialize Passport
 server.use(passport.initialize());
 server.use(passport.session());
 
-// Add SignEasy OAuthClient as passport-strategy for authentication
-passport.use(new SEAuth(
-  {
-    sandbox: true,
-    clientID: cfg.clientID,
-    clientSecret: cfg.clientSecret,
-    callbackURL: cfg.callbackURL,
-    scope: 'user:read'
-  },
-  function(accessToken, refreshToken, profile, done) {
-    console.log('Got access token', accessToken, refreshToken);
-
-    // Once we have the accessToken & refreshToken, we can initialize the SignEasy API Client for making API requests
-    const apiClient = new SEApi({
+// Add Signeasy OAuthClient as passport-strategy for authentication
+passport.use(
+  new SEAuth(
+    {
       sandbox: true,
-      clientId: cfg.clientID,
+      clientID: cfg.clientID,
       clientSecret: cfg.clientSecret,
-      accessToken: accessToken,
-      refreshToken: refreshToken
-    });
+      callbackURL: cfg.callbackURL,
+      scope: 'user:read rs:read rs:create rs:update original:read original:create original:update signed:create signed:read signed:update files:read template:manage webhooks:manage'
+    },
+    function(accessToken, refreshToken, profile, done) {
 
-    apiClient.getProfile((err, user) => {
-      if (err) {
-        done(err);
-        return;
-      }
+      const apiClient = new SEApi({
+        sandbox: true,
+        clientId: cfg.clientID,
+        clientSecret: cfg.clientSecret,
+        accessToken: accessToken,
+        refreshToken: refreshToken
+      });
 
-      // Ideally, we would want to store the accessToken & refreshToken in some DB for later use
-      user.accessToken = accessToken;
-      user.refreshToken = refreshToken;
+      apiClient.getProfile((err, user) => {
+        if (err) {
+          done(err);
+          return;
+        }
 
-      console.log('Got user', user);
+        user.accessToken = accessToken;
+        user.refreshToken = refreshToken;
 
-      done(undefined, user);
-    });
-  }
-));
+        done(null, user);
+      });
+    }
+  )
+);
 
-
-server.get('/auth', passport.authenticate('signeasy'));
-server.get('/auth/cb', passport.authenticate('signeasy',
-  {
-    session: true
-  }
-), (req, res) => {
-  if (req.user) {
-    res.json(req.user);
-  } else {
-    res.json(false);
-  }
+// More about serializeUser & deserializeUser functions here -
+// http://www.passportjs.org/docs/configure/
+passport.serializeUser(function(user, done) {
+  userSessionCache[user.id] = user;
+  done(undefined, user.id);
 });
 
+passport.deserializeUser(function(id, done) {
+  done(undefined, userSessionCache[id]);
+});
 
-server.listen(cfg.port, function () {
+server.get('/auth/provider', passport.authenticate('signeasy'));
+server.get(
+  '/auth/provider/callback',
+  passport.authenticate('signeasy'),
+  (req, res) => {
+    if (req.user) {
+      res.json(req.user);
+    } else {
+      res.redirect('/auth/provider');
+    }
+  }
+);
+
+server.get('/', (req, res) => {
+  res.sendFile(__dirname + '/index.html');
+});
+
+server.use((err, req, res, next) => {
+  console.error('Server error', err);
+
+  // Do not expose system error(`err`) to outside world
+  res.status(500).json({
+    errors: ['Something went wrong. Please try again later']
+  });
+});
+
+server.listen(cfg.port, function() {
   console.log(`Visit ${cfg.baseUrl} to view the app`);
 });
 
