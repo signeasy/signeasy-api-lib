@@ -1,0 +1,58 @@
+body {
+  background-color: #fafafa;
+}
+
+header {
+  padding: 10px 50px;
+  background-color: #008BE7;
+}
+
+header div {
+  font-size: 26px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.doc-container {
+  position: relative;
+  width: 75%;
+  margin: 30px auto;
+}
+
+.doc-holder {
+  width: 100%;
+  box-shadow: inset 0px -8px 18px -3px rgba(94,94,94,.5);
+}
+
+.doc-holder__loggedout {
+  filter: blur(10px);
+}
+
+.doc-holder  object {
+  width: 100%;
+}
+
+.doc-overlay-loggedout {
+  width: 400px;
+  position: absolute;
+  top: 150px;
+  left: 50%;
+  margin-left: -200px;
+  text-align: center;
+  z-index: 2;
+}
+
+.doc-overlay-loggedin {
+  width: 75%;
+  position: fixed;
+  bottom: 0px;
+  left: 50%;
+  margin-left: -37.5%;
+  margin-top: 15px;
+  text-align: center;
+}
+
+.button {
+  margin-top: 20px;
+  width: 200px;
+}

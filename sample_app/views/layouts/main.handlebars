@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Sample Signeasy App</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css" rel="stylesheet" />
+    <link href="/css/style.css" rel="stylesheet" />
+</head>
+<body>
+    <header>
+      <div>Himalaya Doc Writer</div>
+    </header>
+    {{{body}}}
+
+    <script>
+      (function () {
+        let uploadedFileId;
+        let isRequestHandled = false;
+
+        function handleError() {
+          window.location = '/';
+        }
+
+        function handleRequest(element) {
+          if (!isRequestHandled) {
+            isRequestHandled = true;
+            element.classList.add('is-loading');
+          } else {
+            isRequestHandled = false;
+            element.classList.remove('is-loading');
+          }
+        }
+
+        document.addEventListener('click', (e) => {
+          if (isRequestHandled) {
+            return;
+          }
+
+          if (e.target.classList.contains('js-uploadBtn')) {
+            handleRequest(e.target);
+
+            fetch('/upload', {method: 'GET', credentials: "same-origin"})
+              .then(res => res.json())
+              .then(response => {
+                if (response.error) {
+                  handleError();
+                } else {
+                uploadedFileId = response.result.id;
+                e.target.innerText = 'Sign Document';
+                e.target.classList.remove('js-uploadBtn');
+                e.target.classList.add('js-signBtn');
+                document.querySelector('.js-infoText').innerText = 'File successfully uploaded. Sign the Document using SignEasy'
+                }
+                handleRequest(e.target);
+              });
+          } else if (e.target.classList.contains('js-signBtn')) {
+            handleRequest(e.target);
+            fetch(`/getSigningUrl?fileId=${uploadedFileId}`,  {method: 'GET', credentials: "same-origin"})
+              .then(res => res.json())
+              .then(response => {
+                if (response.error) {
+                  handleError();
+                } else {
+                  window.open(response.result.url);
+                }
+                handleRequest(e.target);
+              });
+          }
+        });
+      })();
+    </script>
+</body>
+</html>
