@@ -37,7 +37,7 @@ app.use(passport.session());
 
 function getApiClient(accessToken, refreshToken) {
   return new SEApi({
-    sandbox: true,
+    sandbox: false,
     clientId: cfg.clientID,
     clientSecret: cfg.clientSecret,
     accessToken: accessToken,
@@ -49,7 +49,7 @@ function getApiClient(accessToken, refreshToken) {
 passport.use(
   new SEAuth(
     {
-      sandbox: true,
+      sandbox: false,
       clientID: cfg.clientID,
       clientSecret: cfg.clientSecret,
       callbackURL: cfg.callbackURL,
