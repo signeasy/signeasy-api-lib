@@ -7,10 +7,10 @@ const config = {
   baseUrl,
   port,
   appUrl: baseUrl,
-  authorizationURL: 'https://api-ext-dev.getsigneasy.com/oauth2/authorize',
-  tokenURL: 'https://api-ext-dev.getsigneasy.com/oauth2/token',
-  clientID: '07biLc2vH7Ze3PrbtfkipAJspsqoOS0yZBdqKDjV',
-  clientSecret: 'eJMHT106B551M5Kpm5oqrjj8Lt3ozcI0Sn7USxLrmktxQgnceE',
+  authorizationURL: 'https://api-ext.getsigneasy.com/oauth2/authorize',
+  tokenURL: 'https://api-ext.getsigneasy.com/oauth2/token',
+  clientID: '4V82IhI149OX5zyBMcYvnTq9vD9FXpS2sV9XK2ec',
+  clientSecret: 'hH5N09kt9QelP9gCONMzHbPHA6QjQUT625yjoFdeZsEfq6Zfrk',
   callbackURL: `${baseUrl}/auth/cb`
 };
 
