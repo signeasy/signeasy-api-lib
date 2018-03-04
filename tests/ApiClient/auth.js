@@ -16,6 +16,9 @@ describe('Auth Resource', function() {
     });
   });
 
+  // Refreshing the token will cause other tests in pipeline to fail
+  // Because the access_token which is already exported & be used for other test suites
+  // will no longer be valid
   it.skip('should refresh the access token', function(done) {
     client.refreshToken((err, response) => {
       if (err) {

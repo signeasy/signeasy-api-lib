@@ -6,5 +6,6 @@
   - [Callbacks](../docs/resources/callbacks.md)
   - [Files](../docs/resources/files.md)
   - [Signing](../docs/resources/signing.md)
+  - [Templates](../docs/resources/templates.md)
   - [Users](../docs/resources/users.md)
 

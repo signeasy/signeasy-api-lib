@@ -48,23 +48,12 @@ function ApiClient(options) {
 }
 
 ApiClient.prototype = {
-  // setAccessToken: (accessToken) => {
-  //   if (accessToken) {
-  //     this._accessToken = accessToken;
-  //   }
-  // },
-
-  // setRefreshToken: (refreshToken) => {
-  //   if (refreshToken) {
-  //     this._refreshToken = refreshToken;
-  //   }
-  // },
-
   _request: function(method, path, body, headers, cb) {
     var baseHeaders = {
       'X-Client-Id': this._clientId,
       Authorization: 'Bearer ' + this._accessToken
     };
+    var reqOpts;
 
     if (arguments.length === 3) {
       cb = body;
@@ -83,52 +72,36 @@ ApiClient.prototype = {
 
     baseHeaders = Object.assign({}, baseHeaders, headers);
 
-    request(
-      {
-        method: method,
-        url: this._baseurl + path,
-        headers: baseHeaders,
-        json: true,
-        formData: body
-      },
-      function(err, response, responseBody) {
-        if (err) {
-          cb(err);
-          return;
-        }
+    reqOpts = {
+      method: method,
+      url: this._baseurl + path,
+      headers: baseHeaders,
+      json: true,
+      formData: body
+    };
 
-        // if (response.statusCode === 401) {
-        //   this.refreshToken((err2, res) => {
-        //     if (err2) {
-        //       cb(err2);
-        //       return;
-        //     }
+    if (baseHeaders['Content-Type'] === 'application/json') {
+      reqOpts.body = body;
+      delete reqOpts.formData;
+    }
 
-        //     this.setAccessToken(res.access_token);
-        //     this.setRefreshToken(res.refresh_token);
-
-        //     // Fire the same call again
-        //     this._request(method, path, body, headers, cb);
-
-        //     // Call back the user specified `onTokenRefresh` hook
-        //     this._onTokenRefresh(res.access_token, res.refresh_token);
-        //   });
-
-        //   return;
-        // }
-
-        if (
-          !(response.statusCode >= 200 && response.statusCode <= 299) &&
-          response.statusCode !== 301 &&
-          response.statusCode !== 302
-        ) {
-          cb(responseBody);
-          return;
-        }
-
-        cb(null, responseBody);
+    request(reqOpts, function(err, response, responseBody) {
+      if (err) {
+        cb(err);
+        return;
       }
-    );
+
+      if (
+        !(response.statusCode >= 200 && response.statusCode <= 299) &&
+        response.statusCode !== 301 &&
+        response.statusCode !== 302
+      ) {
+        cb(responseBody);
+        return;
+      }
+
+      cb(null, responseBody);
+    });
   },
 
   _requestOauth: function(method, path, body, headers, cb) {

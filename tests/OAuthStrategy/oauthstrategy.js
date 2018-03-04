@@ -87,7 +87,7 @@ describe('OAuth Strategy', function() {
     });
   });
 
-  it('should execute multipart request', function(done) {
+  it.skip('should execute multipart request', function(done) {
     var options = {};
 
     var body = qs.stringify({

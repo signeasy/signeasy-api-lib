@@ -39,13 +39,22 @@ describe('User Resource', function() {
     });
   });
 
-  it('should throw error when baseurl is invalid', function(done) {
-    client._baseurl = 'signeasy';
-    client.getProfile(err => {
+  it.skip('should create a new user', function(done) {
+    var data = {
+      email: 'test' + new Date().getTime() + '@getsigneasy.com',
+      password_hash: 'somehash',
+      platform: 'partner',
+      login_source: 'email',
+      version: 'v1',
+      first_name: 'Test',
+      last_name: 'Signeasy',
+      company: 'Signeasy'
+    };
+
+    client.createUser(data, err => {
       if (err) {
-        assert.ok(true);
-      } else {
-        assert.ok(false);
+        done(err);
+        return;
       }
 
       done();
