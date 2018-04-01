@@ -1,15 +1,28 @@
 const express = require('express');
 const path = require('path');
+const bodyParser = require('body-parser');
 const session = require('express-session');
 const passport = require('passport');
 const exphbs = require('express-handlebars');
 const SEAuth = require('signeasy').OAuthStrategy;
 const SEApi = require('signeasy').ApiClient;
 const cfg = require('./config');
+const multer = require('multer');
+
+var storage = multer.diskStorage({
+  destination: function(req, file, cb) {
+    cb(null, path.join(__dirname, '/public/files/'));
+  },
+  filename: function(req, file, cb) {
+    cb(null, `${Math.floor(Math.random() * 1000 + 1)}__${file.originalname}`);
+  }
+});
+
+var upload = multer({ storage: storage });
 
 const userSessionCache = {};
 
-var app = express();
+const app = express();
 
 app.use(
   session({
@@ -19,13 +32,19 @@ app.use(
   })
 );
 
+app.use(bodyParser.json());
 app.use(express.static('public'));
 
 // view engine setup
 app.engine(
   'handlebars',
   exphbs({
-    defaultLayout: 'main'
+    defaultLayout: 'main',
+    helpers: {
+      inc: function(value) {
+        return parseInt(value, 10) + 1;
+      }
+    }
   })
 );
 
@@ -60,13 +79,13 @@ passport.use(
       // Once we have the accessToken & refreshToken, we can initialize the SignEasy API Client for making API requests
       const apiClient = getApiClient(accessToken, refreshToken);
 
-      console.log(accessToken, refreshToken);
-
       apiClient.getProfile((err, user) => {
         if (err) {
           done(err);
           return;
         }
+
+        console.log(accessToken, refreshToken);
 
         // Ideally, we would want to store the accessToken & refreshToken in some DB for later use
         user.accessToken = accessToken;
@@ -105,21 +124,55 @@ app.get(
     session: true
   }),
   (req, res) => {
-    res.redirect('/');
+    res.redirect('/dashboard');
   }
 );
 
-app.get('/upload', (req, res) => {
+app.get('/dashboard', (req, res, next) => {
   if (req.user) {
-    const filename = 'test123' + Date.now() + '.pdf';
+    req.apiClient.getAllPendingFiles((err, { files }) => {
+      if (err) {
+        next(err);
+        return;
+      }
+
+      const data = {
+        pendingFiles: files.map(f => {
+          return Object.assign({}, f, {
+            canCancel: parseInt(f.owner_user_id, 10) === req.user.id,
+            canRemind: parseInt(f.owner_user_id, 10) === req.user.id,
+            canDecline: parseInt(f.owner_user_id, 10) !== req.user.id
+          });
+        })
+      };
+
+      res.render('dashboard', {
+        data
+      });
+    });
+  } else {
+    res.redirect('/');
+  }
+});
+
+app.post('/api/upload', upload.single('document'), (req, res) => {
+  if (req.user) {
     req.apiClient.importFileAsOriginal(
-      filename,
-      path.join(__dirname, '/public/files/form.pdf'),
-      (error, result) => {
-        res.json({
-          error,
-          result
-        });
+      req.file.filename,
+      path.join(__dirname, `/public/files/${req.file.filename}`),
+      (err1, res1) => {
+        if (err1) {
+          res.json({
+            error: err1
+          });
+        } else {
+          req.apiClient.getSigningUrl(res1.id, (err2, res2) => {
+            res.json({
+              error: err2,
+              result: Object.assign(res1, res2)
+            });
+          });
+        }
       }
     );
   } else {
@@ -129,9 +182,9 @@ app.get('/upload', (req, res) => {
   }
 });
 
-app.get('/getSigningUrl', (req, res) => {
-  if (req.user && req.query.fileId) {
-    req.apiClient.getSigningUrl(req.query.fileId, (error, result) => {
+app.post('/api/create-rs', (req, res) => {
+  if (req.user) {
+    req.apiClient.initiateSignatureRequest(req.body, (error, result) => {
       res.json({
         error,
         result
@@ -139,7 +192,55 @@ app.get('/getSigningUrl', (req, res) => {
     });
   } else {
     res.json({
-      error: 'User not logged in'
+      error: 'Something went wrong'
+    });
+  }
+});
+
+app.get('/api/remind-rs', (req, res) => {
+  if (req.user && req.query.fileId) {
+    req.apiClient.remindAboutSignatureRequest(
+      req.query.fileId,
+      (error, result) => {
+        res.json({
+          error,
+          result
+        });
+      }
+    );
+  } else {
+    res.json({
+      error: 'Something went wrong'
+    });
+  }
+});
+
+app.get('/api/cancel-rs', (req, res) => {
+  if (req.user && req.query.fileId) {
+    req.apiClient.cancelSignatureRequest(req.query.fileId, (error, result) => {
+      res.json({
+        error,
+        result
+      });
+    });
+  } else {
+    res.json({
+      error: 'Something went wrong'
+    });
+  }
+});
+
+app.get('/api/decline-rs', (req, res) => {
+  if (req.user && req.query.fileId) {
+    req.apiClient.declineSignatureRequest(req.query.fileId, (error, result) => {
+      res.json({
+        error,
+        result
+      });
+    });
+  } else {
+    res.json({
+      error: 'Something went wrong'
     });
   }
 });

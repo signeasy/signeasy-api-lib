@@ -1,21 +1,10 @@
 <div class="doc-container">
-  {{#if isLoggedIn}}
-    <div class="doc-holder">
-  {{else}}
-    <div class="doc-holder doc-holder__loggedout">
-  {{/if}}
+  <div class="doc-holder doc-holder__loggedout">
     <object class='documentView' data="{{filePath}}" type="application/pdf" height="500"></object>
   </div>
-  {{#if isLoggedIn}}
-    <div class="box doc-overlay-loggedin">
-      <h5 class="js-infoText">Your are Logged-in</h5>
-      <button class="button is-info js-uploadBtn" type="button">UPLOAD DOCUMENT</button>
-    </div>
-  {{else}}
-    <div class="box doc-overlay-loggedout">
-      <h5>You are not logged-in</h5>
-      <a class="button is-info" href="{{authUrl}}">LOGIN WITH SIGNEASY</a>
-    </div>
-  {{/if}}
+  <div class="box doc-overlay-loggedout">
+    <h5>You are not logged-in</h5>
+    <a class="button is-info" href="{{authUrl}}">LOGIN WITH SIGNEASY</a>
+  </div>
 </div>
 

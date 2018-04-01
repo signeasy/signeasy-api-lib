@@ -1,5 +1,6 @@
 body {
   background-color: #fafafa;
+  min-height: 100vh;
 }
 
 header {
@@ -11,6 +12,11 @@ header div {
   font-size: 26px;
   font-weight: 700;
   color: #fff;
+
+}
+
+.navbar {
+  border-bottom: 1px solid #eaeaea;
 }
 
 .doc-container {
@@ -52,7 +58,42 @@ header div {
   text-align: center;
 }
 
-.button {
+.doc-container .button {
   margin-top: 20px;
   width: 200px;
+}
+
+.section {
+  padding: 50px 30px;
+  background-color: #fff;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.section__title {
+  margin: 0 0 20px;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.section__rs__table {
+  width: 100%;
+  max-height: 300px;
+  height: 300px;
+  overflow-y: scroll;
+}
+
+.section__rs__table .buttons {
+  display: inline-flex;
+  margin-bottom: 0 !important;
+}
+
+.section__rs__table .info-text {
+  font-size: 12px;
+  color: #00d1b2;
+}
+
+.create-rs-wrapper {
+  margin-top: 30px;
+  width: 100%;
+  max-width: 800px;
 }

@@ -15,9 +15,10 @@
     "express": "^4.16.2",
     "express-handlebars": "^3.0.0",
     "express-session": "^1.15.6",
+    "multer": "^1.3.0",
     "passport": "^0.4.0",
     "path": "^0.12.7",
-    "signeasy": "^0.1.2"
+    "signeasy": "^0.2.0"
   },
   "devDependencies": {
     "nodemon": "^1.15.1"
