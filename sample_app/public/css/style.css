@@ -69,6 +69,20 @@ header div {
   border-bottom: 1px solid #eaeaea;
 }
 
+.section_top {
+  padding: 50px 30px;
+  background-color: #fff;
+  border-bottom: 1px solid #eaeaea;
+}
+.section__upload {
+  display:inline-block;
+  width: 50%;
+} 
+
+.section__api_key {
+  display:inline-block;
+} 
+
 .section__title {
   margin: 0 0 20px;
   font-size: 24px;
