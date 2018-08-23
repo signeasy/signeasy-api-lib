@@ -137,6 +137,7 @@ app.get('/dashboard', (req, res, next) => {
       }
 
       const data = {
+        accessToken: req.user.accessToken,
         pendingFiles: files.map(f => {
           return Object.assign({}, f, {
             canCancel: parseInt(f.owner_user_id, 10) === req.user.id,
