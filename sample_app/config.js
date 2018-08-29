@@ -9,8 +9,8 @@ const config = {
   appUrl: baseUrl,
   authorizationURL: 'https://api-ext.getsigneasy.com/oauth2/authorize',
   tokenURL: 'https://api-ext.getsigneasy.com/oauth2/token',
-  clientID: '4V82IhI149OX5zyBMcYvnTq9vD9FXpS2sV9XK2ec',
-  clientSecret: 'hH5N09kt9QelP9gCONMzHbPHA6QjQUT625yjoFdeZsEfq6Zfrk',
+  clientID: 'fiuLeRRIouFMXblt1keYYbPPbeelFjdOqC7kPmmo',
+  clientSecret: 'J5UvQ41IUhaXpHGggpY0GUDF9tgz3hzDIw1koPnrcYED87dqm6',
   callbackURL: `${baseUrl}/auth/cb`
 };
 
