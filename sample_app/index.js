@@ -73,7 +73,7 @@ passport.use(
       clientSecret: cfg.clientSecret,
       callbackURL: cfg.callbackURL,
       scope:
-        'user:read rs:read rs:create rs:update original:read original:create original:update signed:create signed:read signed:update files:read template:manage webhooks:manage rs:signingurl'
+        'user:read rs:read rs:create rs:update original:read original:create original:update signed:create signed:read signed:update files:read template:manage webhooks:manage rs:signingurl user:create'
     },
     function(accessToken, refreshToken, profile, done) {
       // Once we have the accessToken & refreshToken, we can initialize the SignEasy API Client for making API requests
