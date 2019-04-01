@@ -137,6 +137,7 @@ app.get('/dashboard', (req, res, next) => {
       }
 
       const data = {
+        clientId: req.user.clientId,
         accessToken: req.user.accessToken,
         pendingFiles: files.map(f => {
           return Object.assign({}, f, {
