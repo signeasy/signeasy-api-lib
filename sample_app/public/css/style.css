@@ -76,11 +76,17 @@ header div {
 }
 .section__upload {
   display:inline-block;
-  width: 50%;
+  width: 33%;
 } 
 
 .section__api_key {
   display:inline-block;
+  width: 33%;
+} 
+
+.section__client_id {
+  display:inline-block;
+  width: 33%;
 } 
 
 .section__title {
