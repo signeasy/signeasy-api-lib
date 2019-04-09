@@ -136,6 +136,7 @@ app.get('/dashboard', (req, res, next) => {
         return;
       }
 
+      console.log('access'+ req.user.accessToken)
       const data = {
         accessToken: req.user.accessToken,
         pendingFiles: files.map(f => {
