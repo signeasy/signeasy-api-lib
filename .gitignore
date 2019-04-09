@@ -5,3 +5,4 @@ sample_app/public/*
 sample_app/logs/*
 *.log
 *.log*
+!sample_app/public/files/form.pdf
