@@ -138,7 +138,7 @@ app.get('/dashboard', (req, res, next) => {
 
       console.log('access'+ req.user.accessToken)
       const data = {
-        clientId: req.user.clientId,
+        clientId: cfg.clientID,
         accessToken: req.user.accessToken,
         pendingFiles: files.map(f => {
           return Object.assign({}, f, {
