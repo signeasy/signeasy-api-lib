@@ -1,7 +1,5 @@
 const port = 3000;
-const baseUrl = process.env.NOW
-  ? 'https://sepocsdk.now.sh'
-  : `http://localhost:${port}`;
+const baseUrl = 'https://api-demo.getsigneasy.com';
 
 const config = {
   baseUrl,

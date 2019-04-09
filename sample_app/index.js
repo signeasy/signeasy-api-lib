@@ -136,6 +136,7 @@ app.get('/dashboard', (req, res, next) => {
         return;
       }
 
+      console.log('access'+ req.user.accessToken)
       const data = {
         clientId: req.user.clientId,
         accessToken: req.user.accessToken,
