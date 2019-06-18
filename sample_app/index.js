@@ -56,7 +56,7 @@ app.use(passport.session());
 
 function getApiClient(accessToken, refreshToken) {
   return new SEApi({
-    sandbox: false,
+    sandbox: true,
     clientId: cfg.clientID,
     clientSecret: cfg.clientSecret,
     accessToken: accessToken,
@@ -64,38 +64,46 @@ function getApiClient(accessToken, refreshToken) {
   });
 }
 
-// Add SignEasy OAuthClient as passport-strategy for authentication
-passport.use(
-  new SEAuth(
-    {
-      sandbox: false,
-      clientID: cfg.clientID,
-      clientSecret: cfg.clientSecret,
-      callbackURL: cfg.callbackURL,
-      scope:
-        'user:read rs:read rs:create rs:update original:read original:create original:update signed:create signed:read signed:update files:read template:manage webhooks:manage rs:signingurl user:create'
-    },
-    function(accessToken, refreshToken, profile, done) {
-      // Once we have the accessToken & refreshToken, we can initialize the SignEasy API Client for making API requests
-      const apiClient = getApiClient(accessToken, refreshToken);
+// creating SignEasy OAuthClient as passport-strategy for authentication.
+var SEStrategy = new SEAuth(
+  {
+    sandbox: true,
+    clientID: cfg.clientID,
+    clientSecret: cfg.clientSecret,
+    callbackURL: cfg.callbackURL,
+    scope:
+      'user:read rs:read rs:create rs:update original:read original:create original:update signed:create signed:read signed:update files:read template:manage webhooks:manage rs:signingurl user:create'
+  },
+  function(accessToken, refreshToken, profile, done) {
+    // Once we have the accessToken & refreshToken, we can initialize the SignEasy API Client for making API requests
+    const apiClient = getApiClient(accessToken, refreshToken);
 
-      apiClient.getProfile((err, user) => {
-        if (err) {
-          done(err);
-          return;
-        }
+    apiClient.getProfile((err, user) => {
+      if (err) {
+        done(err);
+        return;
+      }
 
-        console.log(accessToken, refreshToken);
+      console.log(accessToken, refreshToken);
 
-        // Ideally, we would want to store the accessToken & refreshToken in some DB for later use
-        user.accessToken = accessToken;
-        user.refreshToken = refreshToken;
+      // Ideally, we would want to store the accessToken & refreshToken in some DB for later use
+      user.accessToken = accessToken;
+      user.refreshToken = refreshToken;
 
-        done(undefined, user);
-      });
-    }
-  )
+      done(undefined, user);
+    });
+  }
 );
+
+// Adding a custom parameter to set access token expiry.
+SEStrategy.tokenParams = function(options) {
+  return {
+    accesstokenttl: cfg.accessTokenTTL
+  };
+};
+
+// Adding SignEasy OAuthClient as passport-strategy for authentication.
+passport.use(SEStrategy);
 
 passport.serializeUser(function(user, done) {
   userSessionCache[user.id] = user;
@@ -136,7 +144,7 @@ app.get('/dashboard', (req, res, next) => {
         return;
       }
 
-      console.log('access'+ req.user.accessToken)
+      console.log('access' + req.user.accessToken);
       const data = {
         clientId: cfg.clientID,
         accessToken: req.user.accessToken,
