@@ -179,9 +179,9 @@ NODE_ENVIRONMENT=PRODUCTION ACCESS_TOKEN=YOUR_ACCESS_TOKEN REFRESH_TOKEN=YOUR_RE
 
 ### Support
 
-- For getting API Access (client id & secret): http://lp.getsigneasy.com/api-request/
-- Technical Assistance: support@getsigneasy.com
-- Sales Enquiries: sales@getsigneasy.com
+- For getting API Access (client id & secret): http://lp.signeasy.com/api-request/
+- Technical Assistance: support@signeasy.com
+- Sales Enquiries: sales@signeasy.com
 
 
 ### License

@@ -1,5 +1,5 @@
 module.exports = {
   version: 'v1',
-  baseurl: 'https://api-ext.getsigneasy.com',
-  sandbox_baseurl: 'https://api-ext-dev.getsigneasy.com'
+  baseurl: 'https://api-ext.signeasy.com',
+  sandbox_baseurl: 'https://api-ext-dev.signeasy.com'
 };

@@ -41,7 +41,7 @@ describe('User Resource', function() {
 
   it.skip('should create a new user', function(done) {
     var data = {
-      email: 'test' + new Date().getTime() + '@getsigneasy.com',
+      email: 'test' + new Date().getTime() + '@signeasy.com',
       password_hash: 'somehash',
       platform: 'partner',
       login_source: 'email',

@@ -314,7 +314,7 @@ Use this function to initiate a signature request
 var data = {
   recipients: [
     {
-      email: 'test@getsigneasy.com',
+      email: 'test@signeasy.com',
       first_name: 'test',
       last_name: 'signeasy'
     }
