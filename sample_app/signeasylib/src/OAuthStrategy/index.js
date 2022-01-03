@@ -2,16 +2,18 @@ var util = require('util');
 var OAuth2Strategy = require('passport-oauth2');
 var request = require('request');
 var qs = require('querystring');
-var cfg = require('../config');
+// var cfg = require('../config');
+// const { Console } = require('console');
 
 function Strategy(options, verify) {
   var opts = options || {};
 
-  this._sandbox = opts.sandbox;
-  this._baseUrl = opts.sandbox ? cfg.sandbox_baseurl : cfg.baseurl;
-
-  opts.authorizationURL = this._baseUrl + '/oauth2/authorize';
-  opts.tokenURL = this._baseUrl + '/oauth2/token';
+  console.log('OAuth2Strategy', opts);
+  
+  // this._sandbox = opts.sandbox;
+  // this._baseUrl = opts.sandbox ? cfg.sandbox_baseurl : cfg.baseurl;
+  // opts.authorizationURL = this._baseUrl + '/oauth2/authorize';
+  // opts.tokenURL = this._baseUrl + '/oauth2/token';
   opts.scopeSeparator = opts.scopeSeparator || ',';
 
   OAuth2Strategy.call(this, opts, verify);
@@ -21,8 +23,14 @@ function Strategy(options, verify) {
   this._oauth2._executeRequest = function(httpLib, ops, postBody, callback) {
     var callbackCalled = false;
     var postparams = JSON.parse(JSON.stringify(qs.parse(postBody)));
+
+    console.log('_oauth2 req', postparams);
+    if(ops.host == 'localhost') {
+      ops.host = ops.host + ':9090'; // localhost running se_oauth service at port 9090
+    }
+    
     var reqOptions = {
-      url: 'https://' + ops.host + ops.path,
+      url: 'http://' + ops.host + ops.path,
       json: true,
       formData: postparams
     };
@@ -42,6 +50,7 @@ function Strategy(options, verify) {
       }
     }
 
+    console.log('reqOptions', reqOptions);
     request.post(reqOptions, function(error, response, body) {
       if (error) {
         callbackCalled = true;

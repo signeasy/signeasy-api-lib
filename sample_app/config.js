@@ -1,16 +1,29 @@
 const port = 3000;
 
-const baseUrl = 'https://api-demo.getsigneasy.com';
+let baseUrl = 'http://localhost:3000';
+let apiExtBaseUrl = 'http://localhost:9090';
+
+if (process.env.NODE_ENV === 'dev') {
+  baseUrl = 'https://api-demo-dev.signeasy.com';
+  apiExtBaseUrl = 'https://api-ext-dev.signeasy.com';
+} else if (process.env.NODE_ENV === 'pre_prod') {
+  baseUrl = 'https://api-demo-preprod.signeasy.com';
+  apiExtBaseUrl = 'https://api-ext-preprod.signeasy.com';
+} else if (process.env.NODE_ENV === 'production') {
+  baseUrl = 'https://api-demo.getsigneasy.com';
+  apiExtBaseUrl = 'https://api-ext.getsigneasy.com';
+}
 
 const config = {
   baseUrl,
   port,
   appUrl: baseUrl,
-  authorizationURL: 'https://api-ext.getsigneasy.com/oauth2/authorize',
-  tokenURL: 'https://api-ext.getsigneasy.com/oauth2/token',
-  clientID: 'fiuLeRRIouFMXblt1keYYbPPbeelFjdOqC7kPmmo',
-  clientSecret: 'J5UvQ41IUhaXpHGggpY0GUDF9tgz3hzDIw1koPnrcYED87dqm6',
-  callbackURL: `${baseUrl}/auth/cb`,
+  apiExtBaseUrl,
+  authorizeClientURL: `${apiExtBaseUrl}/oauth2/authorize_client`,
+  authorizationURL: `${apiExtBaseUrl}/oauth2/authorize`,
+  tokenURL: `${apiExtBaseUrl}/oauth2/token`,
+  callbackURL: `${baseUrl}/client/cb`,
+  authCallbackURL: `${baseUrl}/auth/cb`,
   accessTokenTTL: 2592000
 };
 

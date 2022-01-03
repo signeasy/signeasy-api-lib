@@ -57,20 +57,24 @@ app.use(passport.session());
 function getApiClient(accessToken, refreshToken) {
   return new SEApi({
     sandbox: false,
-    clientId: cfg.clientID,
-    clientSecret: cfg.clientSecret,
+    // clientId: cfg.clientID,
+    // clientSecret: cfg.clientSecret,
+    baseURL: cfg.apiExtBaseUrl,
     accessToken: accessToken,
     refreshToken: refreshToken
   });
 }
 
-// creating SignEasy OAuthClient as passport-strategy for authentication.
-var SEStrategy = new SEAuth(
+function generateSEStrategy(client_id, client_secret) {
+  // creating SignEasy OAuthClient as passport-strategy for authentication.
+  var SEStrategy = new SEAuth(
   {
     sandbox: false,
-    clientID: cfg.clientID,
-    clientSecret: cfg.clientSecret,
-    callbackURL: cfg.callbackURL,
+    clientID: client_id,
+    clientSecret: client_secret,
+    callbackURL: cfg.authCallbackURL,
+    authorizationURL: cfg.authorizationURL,
+    tokenURL: cfg.tokenURL,
     scope:
       'user:read rs:read rs:create rs:update original:read original:create original:update signed:create signed:read signed:update files:read template:manage webhooks:manage rs:signingurl user:create'
   },
@@ -89,30 +93,32 @@ var SEStrategy = new SEAuth(
       // Ideally, we would want to store the accessToken & refreshToken in some DB for later use
       user.accessToken = accessToken;
       user.refreshToken = refreshToken;
+      user.clientId = client_id;
+      user.clientSecret = client_secret;
 
       done(undefined, user);
     });
-  }
-);
+  });
 
-// Adding a custom parameter to set access token expiry.
-SEStrategy.tokenParams = function(options) {
-  return {
-    accesstokenttl: cfg.accessTokenTTL
+  // Adding a custom parameter to set access token expiry.
+  SEStrategy.tokenParams = function(options) {
+    return {
+      accesstokenttl: cfg.accessTokenTTL
+    };
   };
-};
 
-// Adding SignEasy OAuthClient as passport-strategy for authentication.
-passport.use(SEStrategy);
+  // Adding SignEasy OAuthClient as passport-strategy for authentication.
+  passport.use(SEStrategy);
 
-passport.serializeUser(function(user, done) {
-  userSessionCache[user.id] = user;
-  done(undefined, user.id);
-});
+  passport.serializeUser(function(user, done) {
+    userSessionCache[user.id] = user;
+    done(undefined, user.id);
+  });
 
-passport.deserializeUser(function(id, done) {
-  done(undefined, userSessionCache[id]);
-});
+  passport.deserializeUser(function(id, done) {
+    done(undefined, userSessionCache[id]);
+  });
+}
 
 app.use((req, res, next) => {
   if (req.user) {
@@ -121,11 +127,24 @@ app.use((req, res, next) => {
   }
 
   res.locals.filePath = '/files/form.pdf';
-  res.locals.authUrl = '/auth';
+  res.locals.authUrl = '/initialize_auth';
   next();
 });
 
+app.get('/initialize_auth', (req, res) => {
+  res.redirect(cfg.authorizeClientURL + '?callback_uri=' + cfg.callbackURL + '&auth_callback_uri=' + cfg.authCallbackURL)
+});
+
 app.get('/auth', passport.authenticate('signeasy'));
+
+app.get(
+  '/client/cb',
+  (req, res) => {
+    generateSEStrategy(req.query.client_id, req.query.client_secret);
+    res.redirect('/auth');
+  }
+);
+
 app.get(
   '/auth/cb',
   passport.authenticate('signeasy', {
@@ -137,6 +156,7 @@ app.get(
 );
 
 app.get('/dashboard', (req, res, next) => {
+  console.log('dashboard', req);
   if (req.user) {
     req.apiClient.getAllPendingFiles((err, { files }) => {
       if (err) {
@@ -146,7 +166,7 @@ app.get('/dashboard', (req, res, next) => {
 
       console.log('access' + req.user.accessToken);
       const data = {
-        clientId: cfg.clientID,
+        clientId: req.user.clientId,
         accessToken: req.user.accessToken,
         pendingFiles: files.map(f => {
           return Object.assign({}, f, {
@@ -260,4 +280,6 @@ app.get('/', function(req, res) {
   res.render('home');
 });
 
-app.listen(cfg.port);
+app.listen(cfg.port, () => {
+  console.log(`App running at ${cfg.port}`);
+});
