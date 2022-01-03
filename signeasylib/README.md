@@ -1,15 +1,9 @@
 # Node SDK for SignEasy [BETA]
 
-A node sdk client for Signeasy API which will simplify the integration of Signeasy Authentication & APIs in your Express based Node web apps.
+A node client for Signeasy API which will simplify the integration of Signeasy Authentication & APIs in your Express based Node web apps.
 
 ### Requirements
 Node 4 or above
-
-### Installation
-Using NPM
-```
-npm i signeasy --save
-```
 
 ### Usage
 This SDK contains 2 modules. One is a OAuth2 based custom passport-strategy for authentication of Signeasy users. Authentication will be needed to retreive `accessToken` & `refreshToken`.
@@ -47,8 +41,8 @@ passport.use(
   new SEAuth(
     {
       sandbox: true,
-      clientID: cfg.clientID,
-      clientSecret: cfg.clientSecret,
+      clientID: 'CLIENT_ID_HERE',
+      clientSecret: 'CLIENT_SECRET_HERE',
       callbackURL: cfg.callbackURL,
       scope: 'user:read rs:read rs:create rs:update original:read original:create original:update signed:create signed:read signed:update files:read template:manage webhooks:manage'
     },
@@ -56,8 +50,6 @@ passport.use(
 
       const apiClient = new SEApi({
         sandbox: true,
-        clientId: cfg.clientID,
-        clientSecret: cfg.clientSecret,
         accessToken: accessToken,
         refreshToken: refreshToken
       });
@@ -129,8 +121,6 @@ const SEApi = require('signeasy').ApiClient;
 
 // Instantiating our new ApiClient
 const apiClient = new SEApi({
-  clientId: 'CLIENT_ID_HERE',
-  clientSecret: 'CLIENT_SECRET_HERE',
   accessToken: 'ACCESS_TOKEN_HERE', // retrieved as part of Authorization
   refreshToken: 'REFRESH_TOKEN_HERE' // retrieved as part of Authorization
 });

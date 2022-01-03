@@ -1,5 +1,5 @@
 var assert = require('assert');
-var ApiClient = require('../../src').ApiClient;
+var ApiClient = require('../../app').ApiClient;
 var cfg = require('../config');
 
 describe('Auth Resource', function() {
@@ -8,8 +8,8 @@ describe('Auth Resource', function() {
   before(() => {
     client = new ApiClient({
       sandbox: process.env.NODE_ENV !== 'production',
-      clientId: cfg.clientId,
-      clientSecret: cfg.clientSecret,
+      // clientId: cfg.clientId,
+      // clientSecret: cfg.clientSecret,
       accessToken: cfg.accessToken,
       refreshToken: cfg.refreshToken,
       onTokenRefresh: () => {}

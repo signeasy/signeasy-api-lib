@@ -1,49 +1,28 @@
 {
-  "name": "signeasy",
-  "version": "0.2.0",
-  "description": "Node SDK for SignEasy Apis",
-  "main": "src/index.js",
+  "name": "sample_app",
+  "version": "1.0.0",
+  "description": "Sample app for Signeasy's node-sdk",
+  "main": "app/index.js",
   "scripts": {
-    "lint": "eslint src",
-    "precommit": "lint-staged",
-    "test": "mocha tests --recursive --timeout 550000",
-    "test:coverage": "nyc --reporter=text  --exclude=tests mocha tests --recursive --timeout 550000"
+    "start": "export NODE_ENV=production && node app/index.js",
+    "start:dev": "export NODE_ENV=dev && node app/index.js",
+    "start:pp": "export NODE_ENV=pre_prod && node app/index.js",
+    "start:watch": "nodemon -e js,handlebars app/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "lint-staged": {
-    "*.{js,json}": [
-      "eslint src --fix",
-      "prettier --write",
-      "git add"
-    ]
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/signeasy/node-sdk.git"
-  },
-  "keywords": [
-    "Signeasy",
-    "Node",
-    "SDK"
-  ],
   "author": "Jigar Jain <jjain91@gmail.com> (http://jigarjain.com)",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/signeasy/node-sdk/issues"
-  },
-  "homepage": "https://github.com/signeasy/node-sdk#readme",
-  "devDependencies": {
-    "eslint": "^4.16.0",
-    "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.8.0",
-    "eslint-plugin-json": "^1.2.0",
-    "husky": "^0.14.3",
-    "lint-staged": "^6.0.1",
-    "mocha": "^5.0.0",
-    "nyc": "^11.4.1",
-    "prettier": "^1.10.2"
-  },
+  "license": "ISC",
   "dependencies": {
-    "passport-oauth2": "^1.4.0",
-    "request": "^2.83.0"
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "express-handlebars": "^3.0.0",
+    "express-session": "^1.15.6",
+    "multer": "^1.3.0",
+    "passport": "^0.4.0",
+    "path": "^0.12.7",
+    "signeasy": "file:./signeasylib"
+  },
+  "devDependencies": {
+    "nodemon": "2.0.15"
   }
 }

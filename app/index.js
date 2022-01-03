@@ -4,8 +4,8 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const passport = require('passport');
 const exphbs = require('express-handlebars');
-const SEAuth = require('signeasy').OAuthStrategy;
-const SEApi = require('signeasy').ApiClient;
+const SEAuth = require('../signeasylib/src').OAuthStrategy;
+const SEApi = require('../signeasylib/src').ApiClient;
 const cfg = require('./config');
 const multer = require('multer');
 
@@ -33,7 +33,7 @@ app.use(
 );
 
 app.use(bodyParser.json());
-app.use(express.static('public'));
+app.use(express.static('app/public'));
 
 // view engine setup
 app.engine(
@@ -48,6 +48,7 @@ app.engine(
   })
 );
 
+app.set("views", path.join(__dirname, "views"));
 app.set('view engine', 'handlebars');
 
 // Initialize Passport

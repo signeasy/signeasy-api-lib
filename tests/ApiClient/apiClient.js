@@ -1,5 +1,5 @@
 var assert = require('assert');
-var ApiClient = require('../../src').ApiClient;
+var ApiClient = require('../../app').ApiClient;
 var cfg = require('../config');
 
 describe('Api Client', function() {
@@ -8,8 +8,8 @@ describe('Api Client', function() {
   it('should initialize', function(done) {
     client = new ApiClient({
       sandbox: process.env.NODE_ENV !== 'production',
-      clientId: cfg.clientId,
-      clientSecret: cfg.clientSecret,
+      // clientId: cfg.clientId,
+      // clientSecret: cfg.clientSecret,
       accessToken: cfg.accessToken,
       refreshToken: cfg.refreshToken,
       onTokenRefresh: () => {}
@@ -24,7 +24,7 @@ describe('Api Client', function() {
     try {
       client = new ApiClient({
         sandbox: process.env.NODE_ENV !== 'production',
-        clientSecret: cfg.clientSecret,
+        // clientSecret: cfg.clientSecret,
         accessToken: cfg.accessToken,
         refreshToken: cfg.refreshToken,
         onTokenRefresh: () => {}
@@ -40,7 +40,7 @@ describe('Api Client', function() {
     try {
       client = new ApiClient({
         sandbox: process.env.NODE_ENV !== 'production',
-        clientId: cfg.clientId,
+        // clientId: cfg.clientId,
         accessToken: cfg.accessToken,
         refreshToken: cfg.refreshToken,
         onTokenRefresh: () => {}
@@ -56,7 +56,7 @@ describe('Api Client', function() {
     try {
       client = new ApiClient({
         sandbox: process.env.NODE_ENV !== 'production',
-        clientId: cfg.clientId,
+        // clientId: cfg.clientId,
         clientSecret: cfg.clientSecret,
         refreshToken: cfg.refreshToken,
         onTokenRefresh: () => {}
@@ -72,8 +72,8 @@ describe('Api Client', function() {
     try {
       client = new ApiClient({
         sandbox: process.env.NODE_ENV !== 'production',
-        clientId: cfg.clientId,
-        clientSecret: cfg.clientSecret,
+        // clientId: cfg.clientId,
+        // clientSecret: cfg.clientSecret,
         accessToken: cfg.accessToken,
         onTokenRefresh: () => {}
       });
