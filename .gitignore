@@ -1,8 +1,4 @@
 node_modules/
-.nyc_output/
 .DS_Store
-app/public/*
-app/logs/*
 *.log
 *.log*
-!app/public/files/form.pdf

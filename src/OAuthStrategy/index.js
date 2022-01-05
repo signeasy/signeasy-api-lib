@@ -2,7 +2,7 @@ var util = require('util');
 var OAuth2Strategy = require('passport-oauth2');
 var request = require('request');
 var qs = require('querystring');
-// var cfg = require('../config');
+var cfg = require('../config');
 // const { Console } = require('console');
 
 function Strategy(options, verify) {
@@ -12,8 +12,10 @@ function Strategy(options, verify) {
   
   // this._sandbox = opts.sandbox;
   // this._baseUrl = opts.sandbox ? cfg.sandbox_baseurl : cfg.baseurl;
-  // opts.authorizationURL = this._baseUrl + '/oauth2/authorize';
-  // opts.tokenURL = this._baseUrl + '/oauth2/token';
+  this._baseUrl = opts.baseURL || cfg.baseURL;
+  opts.authorizationURL = this._baseUrl + '/oauth2/authorize';
+  opts.tokenURL = this._baseUrl + '/oauth2/token';
+
   opts.scopeSeparator = opts.scopeSeparator || ',';
 
   OAuth2Strategy.call(this, opts, verify);
