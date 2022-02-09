@@ -32,7 +32,7 @@ function Strategy(options, verify) {
     }
     
     var reqOptions = {
-      url: 'http://' + ops.host + ops.path,
+      url: 'https://' + ops.host + ops.path,
       json: true,
       formData: postparams
     };
