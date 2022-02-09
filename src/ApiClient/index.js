@@ -79,6 +79,8 @@ ApiClient.prototype = {
       formData: body
     };
 
+    console.log('ApiClient request - ', reqOpts);
+
     if (baseHeaders['Content-Type'] === 'application/json') {
       reqOpts.body = body;
       delete reqOpts.formData;

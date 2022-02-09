@@ -13,6 +13,7 @@ function Strategy(options, verify) {
   // this._sandbox = opts.sandbox;
   // this._baseUrl = opts.sandbox ? cfg.sandbox_baseurl : cfg.baseurl;
   this._baseUrl = opts.baseURL || cfg.baseURL;
+
   opts.authorizationURL = this._baseUrl + '/oauth2/authorize';
   opts.tokenURL = this._baseUrl + '/oauth2/token';
 
@@ -38,6 +39,7 @@ function Strategy(options, verify) {
     };
 
     function passBackControl(response, result) {
+      console.log('passBackControl result', result);
       if (!callbackCalled) {
         callbackCalled = true;
         if (
